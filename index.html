@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style lang="scss">
+        .viewport{
+            width: 300px;
+            /* height: 400px; */
+            background-color: yellowgreen;
+            position: fixed;
+            left:0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            overflow-y:scroll;
+        }
+        .scrollbar{
+            height: 3000px;
+        } 
+        .list{
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .row{
+            /* height: 20px; */
+            height: var(--rowheight);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 用户视口：超出部分滚动 -->
+        <!-- :style绑定，你可以根据组件内的数据动态改变CSS变量的值 -->
+        <div class="viewport" ref="viewport" :style="{'--rowheight':rowHeight+'px'}" @scroll="onScroll">
+            <!-- 子元素超出父元素高度 -->
+            <div class="scrollbar" ref="scrollbar"></div>
+            <div class="list">
+                <div class="row" v-for="(item,i) in showList">
+                    {{item.n}}
+                </div>
+            </div>     
+        </div>
+        
+    </div>
+    <script src="./vue.js"></script>
+    <script>
+        //创造海量数据   [empty]
+        const bigList = new Array(200000).fill(null).map((ele,i)=>({n:i+1}))
+        // console.log('大数据：',bigList)
+
+        new Vue({
+            methods: {
+                onScroll(){
+                    //代表卷进去了多少
+                    this.offsetTop = this.$refs.viewport.scrollTop
+                    this.start = Math.round(this.offsetTop/this.rowHeight)
+                    this.end = this.start+this.viewCount
+                    console.log(this.start,this.end)
+
+
+                }
+            },
+            mounted() {
+                this.$refs.viewport.style.height = this.rowHeight*this.viewCount+'px';
+                this.$refs.scrollbar.style.height = (this.rowHeight*this.list.length)+'px';
+
+            },
+            computed:{
+                showList(){
+                    return this.list.slice(this.start,this.end)
+                }
+            },
+            el:'#app',
+            data(){
+                return{ 
+                    start:0,
+                    end:20,                 
+                    // list:bigList
+                    //递归对象，处理所有属性 Object.defineProperty
+                    //不需要修改，节约性能
+                    //判断是否Object.isFrozen(obj)
+                    list:Object.freeze(bigList),
+                    // 模拟外部传递的属性
+                    viewCount:20,//显示多少数据
+                    rowHeight:30,//行高
+
+                }
+            }
+        })
+    </script>
+</body>
+</html>

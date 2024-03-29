@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        let total = 100000
+        //新版本浏览器的优化，当js执行完成后会一并插入到页面中
+        let index = 0 //偏移量
+        let id = 0//递增的内容
+        function load() {
+            index+=50
+            if(index<total){
+                setTimeout(() => {//分片渲染，因为定时器是一个宏任务，会等待UI渲染完成后执行
+                    let fragment = document.createDocumentFragment()//为了兼容老版本浏览器，使用文档碎片
+                    for (let i = 0; i < 50; i++) {
+                       
+                        let li = document.createElement('li')
+                        li.innerHTML = id++
+                        // container.appendChild(li)//新版本可以直接这样  
+                        fragment.appendChild(li)                
+                    }
+                    container.appendChild(fragment)
+                    load()
+                }, 0); 
+            }            
+        }
+        load()
+        // 分片加载会导致页面dom元素过多，造成页面卡顿
+        // 因此使用虚拟列表优化 只渲染当前可视区域
+
+    </script>
+</body>
+</html>

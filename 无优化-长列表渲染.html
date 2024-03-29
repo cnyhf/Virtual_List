@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        let total = 100000
+        //新版本浏览器的优化，当js执行完成后会一并插入到页面中
+        let timer = Date.now()
+        for(let i=0;i<total;i++){
+            let li = document.createElement('li')
+            li.innerHTML = i
+            container.appendChild(li)
+        }
+        console.log(Date.now()-timer)//算的是js执行的时间
+        setTimeout(() => {
+            console.log(Date.now()-timer)//算的是js执行+渲染的时间
+        }, 0);
+        // 分片 根据数据大小划分，每次加载固定得数量
+    </script>
+</body>
+</html>
